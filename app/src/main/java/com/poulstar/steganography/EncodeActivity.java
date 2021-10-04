@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 public class EncodeActivity extends Activity {
 
     ImageView imgImage;
-    Button btnSave, btnShare;
+    Button btnSave, btnShare, btnCapture;
     EditText txtText;
 
     @Override
@@ -22,6 +22,9 @@ public class EncodeActivity extends Activity {
         imgImage = findViewById(R.id.imgView);
         txtText = findViewById(R.id.txtText);
         btnSave = findViewById(R.id.btnSave);
+        btnShare = findViewById(R.id.btnShare);
         btnShare = findViewById(R.id.btnCapture);
     }
+
+
 }
