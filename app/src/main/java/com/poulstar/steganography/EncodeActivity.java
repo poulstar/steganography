@@ -2,24 +2,35 @@ package com.poulstar.steganography;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class EncodeActivity extends Activity {
 
     ImageView imgImage;
     Button btnSave, btnShare, btnCapture;
     EditText txtText;
+    Bitmap capturedImage;
 
     private final int REQUEST_ID = 1;
     private final int IMAGE_CAPTURE_ID = 2;
@@ -54,11 +65,28 @@ public class EncodeActivity extends Activity {
     }
 
     private void share() {
-
+//        if(capturedImage != null) {
+//            Intent intent = new Intent(Intent.ACTION_SEND);
+//            intent.setType("image/jpeg");
+//
+//        }
     }
 
     private void save() {
-
+        if(capturedImage != null) {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, "stegano.png");
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+            Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            try {
+                OutputStream out = getContentResolver().openOutputStream(uri);
+                capturedImage.compress(Bitmap.CompressFormat.PNG, 100, out);
+                out.close();
+                Toast.makeText(getApplicationContext(), "Saved image to "+ uri.getPath(), Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -66,8 +94,8 @@ public class EncodeActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == IMAGE_CAPTURE_ID) {
             if(resultCode == RESULT_OK) {
-                Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
-                imgImage.setImageBitmap(imageBitmap);
+                capturedImage = (Bitmap) data.getExtras().get("data");
+                imgImage.setImageBitmap(capturedImage);
             }
         }
     }
