@@ -65,17 +65,21 @@ public class EncodeActivity extends Activity {
     }
 
     private void share() {
-//        if(capturedImage != null) {
-//            Intent intent = new Intent(Intent.ACTION_SEND);
-//            intent.setType("image/jpeg");
-//
-//        }
+        if(capturedImage != null) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("image/jpeg");
+            Uri uri = save();
+            if(uri != null) {
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
+                startActivity(Intent.createChooser(intent, "Share image"));
+            }
+        }
     }
 
-    private void save() {
+    private Uri save() {
         if(capturedImage != null) {
             ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.TITLE, "stegano.png");
+            values.put(MediaStore.Images.Media.TITLE, "stegano");
             values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
             Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
             try {
@@ -83,10 +87,12 @@ public class EncodeActivity extends Activity {
                 capturedImage.compress(Bitmap.CompressFormat.PNG, 100, out);
                 out.close();
                 Toast.makeText(getApplicationContext(), "Saved image to "+ uri.getPath(), Toast.LENGTH_LONG).show();
+                return uri;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        return null;
     }
 
     @Override
