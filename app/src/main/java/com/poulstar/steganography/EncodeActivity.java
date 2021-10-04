@@ -22,6 +22,6 @@ public class EncodeActivity extends Activity {
         imgImage = findViewById(R.id.imgView);
         txtText = findViewById(R.id.txtText);
         btnSave = findViewById(R.id.btnSave);
-        btnShare = findViewById(R.id.btnShare);
+        btnShare = findViewById(R.id.btnCapture);
     }
 }

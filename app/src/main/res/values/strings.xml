@@ -3,6 +3,7 @@
 
     <string name="button_encode">Encode</string>
     <string name="button_decode">Decode</string>
+    <string name="button_capture">Capture image</string>
     <string name="button_share">Share image</string>
     <string name="button_save">Save image</string>
     <string name="button_load">Load image</string>
