@@ -26,6 +26,7 @@ public class DecodeActivity extends Activity {
     TextView txtMessage;
     Bitmap image;
 
+    private final String TAG = "DecoderActivity";
     private final int MEDIA_REQUEST_ID = 8;
 
     @Override
@@ -48,6 +49,28 @@ public class DecodeActivity extends Activity {
         startActivityForResult(intent, MEDIA_REQUEST_ID);
     }
 
+    public void decodeMessage() {
+        if(image != null) {
+            String message = "";
+            for (int j=0; j < image.getHeight(); j++) {
+                for (int i=0; i < image.getWidth(); i++) {
+                    int color = image.getPixel(i, j);
+                    char alpha = (char) (Color.alpha(color) - 120);
+                    Log.i(TAG, String.format("i(%d),j(%d): %s", i, j, alpha));
+                    if(alpha == '$') {
+                        final String finalMessage = message;
+                        runOnUiThread(() -> {
+                            txtMessage.setText(finalMessage);
+                        });
+                        return;
+                    }else {
+                        message += alpha;
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -57,6 +80,7 @@ public class DecodeActivity extends Activity {
                 try {
                     InputStream input = getContentResolver().openInputStream(uri);
                     image = BitmapFactory.decodeStream(input);
+                    decodeMessage();
 
                     runOnUiThread(() -> {
                         imgPreview.setImageBitmap(image);
