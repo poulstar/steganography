@@ -150,7 +150,7 @@ public class EncodeActivity extends Activity {
     }
 
     private void checkPermissions() {
-        if(Build.VERSION.SDK_INT >= 26) {
+        if(Build.VERSION.SDK_INT >= 23) {
             if(checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
                 || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{
