@@ -6,11 +6,14 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,6 +35,7 @@ public class EncodeActivity extends Activity {
     EditText txtText;
     Bitmap capturedImage;
 
+    private final String TAG = "EncoderActivity";
     private final int REQUEST_ID = 1;
     private final int IMAGE_CAPTURE_ID = 2;
 
@@ -78,6 +82,7 @@ public class EncodeActivity extends Activity {
 
     private Uri save() {
         if(capturedImage != null) {
+            this.appendMessage();
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, "stegano");
             values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
@@ -95,13 +100,31 @@ public class EncodeActivity extends Activity {
         return null;
     }
 
+    public void appendMessage() {
+        if(capturedImage != null) {
+            String message = txtText.getText().toString() + "$";
+            int counter = 0;
+            for (char c : message.toCharArray()) {
+                int j = counter / capturedImage.getWidth();
+                int i = counter % capturedImage.getWidth();
+                int color = capturedImage.getPixel(i, j);
+                capturedImage.setPixel(i, j,
+                        Color.argb(c + 120, Color.red(color), Color.green(color), Color.blue(color)));
+                Log.i(TAG, String.format("i(%d),j(%d): %s", i, j, c));
+                counter++;
+            }
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == IMAGE_CAPTURE_ID) {
             if(resultCode == RESULT_OK) {
-                capturedImage = (Bitmap) data.getExtras().get("data");
-                imgImage.setImageBitmap(capturedImage);
+                Bitmap image = (Bitmap) data.getExtras().get("data");
+                imgImage.setImageBitmap(image);
+                capturedImage = image.copy(Bitmap.Config.ARGB_8888, true);
+                capturedImage.setHasAlpha(true);
             }
         }
     }
