@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -46,7 +45,7 @@ public class DecodeActivity extends Activity {
     private void loadImage() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/png");
-        startActivityForResult(intent, MEDIA_REQUEST_ID);
+        startActivityForResult(Intent.createChooser(intent, "Save file"), MEDIA_REQUEST_ID);
     }
 
     public void decodeMessage() {
