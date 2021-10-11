@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,6 +35,7 @@ public class EncodeActivity extends Activity {
     Button btnSave, btnShare, btnCapture;
     EditText txtText;
     Bitmap capturedImage;
+    String fullSizeImagePath;
 
     private final String TAG = "EncoderActivity";
     private final int REQUEST_ID = 1;
@@ -65,7 +67,23 @@ public class EncodeActivity extends Activity {
 
     private void capture() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, IMAGE_CAPTURE_ID);
+
+        // Save full size image
+        try {
+            File file = File.createTempFile(
+                    "stegano_image",
+                    ".png",
+                    getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+            Uri photoURI = FileProvider.getUriForFile(this,
+                    "com.example.android.fileprovider",
+                    file);
+            fullSizeImagePath = file.getAbsolutePath();
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(cameraIntent, IMAGE_CAPTURE_ID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void share() {
@@ -121,10 +139,12 @@ public class EncodeActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == IMAGE_CAPTURE_ID) {
             if(resultCode == RESULT_OK) {
-                Bitmap image = (Bitmap) data.getExtras().get("data");
-                imgImage.setImageBitmap(image);
-                capturedImage = image.copy(Bitmap.Config.ARGB_8888, true);
+//                Bitmap image = (Bitmap) data.getExtras().get("data");
+
+                Bitmap originalImage = BitmapFactory.decodeFile(fullSizeImagePath);
+                capturedImage = originalImage.copy(Bitmap.Config.ARGB_8888, true);
                 capturedImage.setHasAlpha(true);
+                imgImage.setImageBitmap(originalImage);
             }
         }
     }
